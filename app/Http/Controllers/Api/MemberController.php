@@ -57,7 +57,7 @@ class MemberController extends Controller
                 'tanggal_lahir' => 'required|date',
                 'alamat' => 'required',
                 'no_telp' => 'required',
-                'password' => 'required',
+
             ]
         );
         if($validate->fails()){
@@ -68,6 +68,7 @@ class MemberController extends Controller
         $id = IdGenerator::generate(['table' => 'member', 'length' => 8, 'prefix' => $date]);
         $storeData['status'] = 'Mati';
         $storeData['id'] = $id;
+        $storeData['password'] = bcrypt($storeData['tanggal_lahir']);
         $member = Member::create($storeData);
         return response([
             'message' => 'Berhasil Menambahkan Member',
@@ -184,6 +185,30 @@ class MemberController extends Controller
 
         return response([
             'message' => 'Gagal Menghapus Member',
+            'data' => null,
+        ], 400);
+    }
+
+    public function resetPassword($id){
+        $member = Member::find($id);
+
+        if (is_null($member)) {
+            return response([
+                'message' => 'Member tidak ditemukan',
+                'data' => null
+            ], 404);
+        }
+     
+        $member->password = bcrypt($member->tanggal_lahir);
+        if($member->save()){
+            return response([
+                'message' => 'Berhasil Mereset Password Member',
+                'data' => $member,
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Gagal Mereset Password Member',
             'data' => null,
         ], 400);
     }

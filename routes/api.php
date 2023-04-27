@@ -24,12 +24,13 @@ Route::post('loginInstruktur', 'App\Http\Controllers\Api\AuthController@loginIns
 Route::post('loginMember', 'App\Http\Controllers\Api\AuthMemberController@loginMember');
 
 
-// Route::group(['middleware' => 'auth:api'], function(){
+Route::group(['middleware' => 'auth:api'], function(){
     Route::get('Member', 'App\Http\Controllers\Api\MemberController@index');
     Route::get('Member/{id}', 'App\Http\Controllers\Api\MemberController@show');
     Route::post('Member', 'App\Http\Controllers\Api\MemberController@store');
     Route::put('Member/{id}', 'App\Http\Controllers\Api\MemberController@update');
     Route::delete('Member/{id}', 'App\Http\Controllers\Api\MemberController@destroy');
+    Route::patch('Member/{id}', 'App\Http\Controllers\Api\MemberController@resetPassword');
 
     Route::get('Instruktur', 'App\Http\Controllers\Api\InstrukturController@index');
     Route::get('Instruktur/{id}', 'App\Http\Controllers\Api\InstrukturController@show');
@@ -42,6 +43,6 @@ Route::post('loginMember', 'App\Http\Controllers\Api\AuthMemberController@loginM
     Route::post('JadwalUmum', 'App\Http\Controllers\Api\JadwalUmumController@store');
     Route::put('JadwalUmum/{id}', 'App\Http\Controllers\Api\JadwalUmumController@update');
     Route::delete('JadwalUmum/{id}', 'App\Http\Controllers\Api\JadwalUmumController@destroy');
-// });
+});
 
 
