@@ -14,12 +14,12 @@ class InstrukturController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    
+
     public function index()
     {
         $instruktur = Instruktur::all();
 
-        if(count($instruktur) > 0){
+        if (count($instruktur) > 0) {
             return response([
                 'message' => 'Berhasil Menerima data',
                 'data' => $instruktur
@@ -57,17 +57,19 @@ class InstrukturController extends Controller
             'alamat' => 'required',
             'tanggal_lahir' => 'required|date',
             'no_telp' => 'required',
-            'password' => 'required',
+            'password' => 'required|string|min:8',
         ]);
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response()->json($validate->errors(), 400);
         }
+
+        $storeData['password'] = bcrypt($request->password);
         $instruktur = Instruktur::create($storeData);
+
         return response([
             'message' => 'Insturktur berhasil ditambahkan',
             'data' => $instruktur
-        ],200);
-
+        ], 200);
     }
 
     /**
@@ -80,7 +82,7 @@ class InstrukturController extends Controller
     {
         $instruktur = Instruktur::find($id);
 
-        if(!is_null($instruktur)){
+        if (!is_null($instruktur)) {
             return response([
                 'message' => 'Berhasil Mendapatkan Data',
                 'data' => $instruktur
@@ -113,7 +115,7 @@ class InstrukturController extends Controller
     public function update(Request $request, $id)
     {
         $instruktur = Instruktur::find($id);
-        if(is_null($instruktur)){
+        if (is_null($instruktur)) {
             return response([
                 'message' => 'instruktur Tidak Ditemukan',
                 'data' => null
@@ -127,21 +129,25 @@ class InstrukturController extends Controller
             'alamat' => 'required',
             'tanggal_lahir' => 'required|date',
             'no_telp' => 'required',
-            'password' => 'string',
+            'password' => 'string|min:8|unique:instruktur' ,
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response(['message' => $validate->errors()], 200);
         }
 
-        $instruktur->nama=$updateData['nama'];
-        $instruktur->email=$updateData['email'];
-        $instruktur->alamat=$updateData['alamat'];
-        $instruktur->tanggal_lahir=$updateData['tanggal_lahir'];
-        $instruktur->no_telp=$updateData['no_telp'];
-        $instruktur->password=$updateData['password'];
+        $instruktur->nama = $updateData['nama'];
+        $instruktur->email = $updateData['email'];
+        $instruktur->alamat = $updateData['alamat'];
+        $instruktur->tanggal_lahir = $updateData['tanggal_lahir'];
+        $instruktur->no_telp = $updateData['no_telp'];
 
-        if($instruktur->save()){
+        if (isset($updateData['password'])) {
+            $instruktur->password = bcrypt($updateData['password']);
+        }
+
+
+        if ($instruktur->save()) {
             return response([
                 'message' => 'Insturktur Berhasil Diupdate',
                 'data' => $instruktur
@@ -159,14 +165,14 @@ class InstrukturController extends Controller
     {
         $instruktur = Instruktur::find($id);
 
-        if(is_null($instruktur)){
+        if (is_null($instruktur)) {
             return response([
                 'message' => 'instruktur Tidak Ditemukan',
                 'data' => null
             ], 404);
         }
-        
-        if($instruktur->delete()){
+
+        if ($instruktur->delete()) {
             return response([
                 'message' => 'instruktur Berhasil Dihapus',
                 'data' => $instruktur

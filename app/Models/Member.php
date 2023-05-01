@@ -10,9 +10,10 @@ use Laravel\Passport\HasApiTokens;
 class Member extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-    
+
     public $incrementing = false;
     protected $keyType = 'string';
+
     public $timestamps = false;
     protected $table = 'member';
     protected $fillable = [

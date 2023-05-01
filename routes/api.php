@@ -24,7 +24,7 @@ Route::post('loginInstruktur', 'App\Http\Controllers\Api\AuthController@loginIns
 Route::post('loginMember', 'App\Http\Controllers\Api\AuthMemberController@loginMember');
 
 
-Route::group(['middleware' => 'auth:api'], function(){
+Route::group(['middleware' => 'auth:pegawaiP'], function () {
     Route::get('Member', 'App\Http\Controllers\Api\MemberController@index');
     Route::get('Member/{id}', 'App\Http\Controllers\Api\MemberController@show');
     Route::post('Member', 'App\Http\Controllers\Api\MemberController@store');
@@ -43,6 +43,6 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('JadwalUmum', 'App\Http\Controllers\Api\JadwalUmumController@store');
     Route::put('JadwalUmum/{id}', 'App\Http\Controllers\Api\JadwalUmumController@update');
     Route::delete('JadwalUmum/{id}', 'App\Http\Controllers\Api\JadwalUmumController@destroy');
+
+    Route::post('LogoutPegawai', 'App\Http\Controllers\Api\AuthController@LogoutPegawai');
 });
-
-

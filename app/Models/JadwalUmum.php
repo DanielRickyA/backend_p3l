@@ -12,17 +12,19 @@ class JadwalUmum extends Model
     protected $table = 'jadwal_umum';
     protected $fillable = [
         'id_kelas',
-        'id_insturktur',
+        'id_instruktur',
         'tanggal',
         'hari_kelas',
         'jam_kelas',
     ];
 
-    public function FKelas(){
+    public function FKelas()
+    {
         return $this->belongsTo(Kelas::class, 'id_kelas', 'id');
     }
 
-    public function FInstruktur(){
-        return $this->belongsTo(Insturktur::class, 'id_instruktur', 'id');
+    public function FInstruktur()
+    {
+        return $this->belongsTo(Instruktur::class, 'id_instruktur', 'id');
     }
 }

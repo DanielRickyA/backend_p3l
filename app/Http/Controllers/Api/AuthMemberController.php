@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Pegawai;
 use Illuminate\Support\Facades\Validator;
+use Laravel\Passport\RefreshToken;
+use Laravel\Passport\Token;
 
 class AuthMemberController extends Controller
 {
@@ -41,7 +43,7 @@ class AuthMemberController extends Controller
 
     public function LogoutMember(Request $request)
     {
-        $token = $request->pegawai()->token();
+        $token = Auth::guard('member')->user()->token_name;
         $token->revoke();
         return response([
             'message' => 'Logout Success'

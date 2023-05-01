@@ -25,5 +25,4 @@ class JadwalHarian extends Model
     {
         return $this->belongsTo(Insturktur::class, 'id_instruktur', 'id');
     }
-    
 }

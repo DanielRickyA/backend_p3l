@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Member;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
+use Illuminate\Support\Facades\Auth;
 
 class MemberController extends Controller
 {
@@ -18,11 +19,12 @@ class MemberController extends Controller
     public function index()
     {
         $member = Member::all();
-        
-        if(count($member) > 0){
+
+        if (count($member) > 0) {
             return response([
                 'message' => 'Berhasil Menerima data',
-                'data' => $member
+                'data' => $member,
+                'userLoggedIn' => Auth::guard('pegawai')->user()
             ], 200);
         }
 
@@ -51,16 +53,17 @@ class MemberController extends Controller
     public function store(Request $request)
     {
         $storeData = $request->all();
-        $validate = Validator::make( $storeData,
+        $validate = Validator::make(
+            $storeData,
             [
                 'nama' => 'required',
                 'tanggal_lahir' => 'required|date',
                 'alamat' => 'required',
-                'no_telp' => 'required',
+                'no_telp' => 'required|',
 
             ]
         );
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response(['message' => $validate->errors()], 400);
         }
 
@@ -72,7 +75,7 @@ class MemberController extends Controller
         $member = Member::create($storeData);
         return response([
             'message' => 'Berhasil Menambahkan Member',
-            'data' => $member,
+            'data' => $member
         ], 200);
     }
 
@@ -107,7 +110,7 @@ class MemberController extends Controller
      */
     public function edit($id)
     {
-    //    
+        //    
     }
 
     /**
@@ -119,8 +122,8 @@ class MemberController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $member = Member::find($id);    
-        if(is_null($member)){
+        $member = Member::find($id);
+        if (is_null($member)) {
             return response([
                 'message' => 'Member tidak ditemukan',
                 'data' => null
@@ -133,10 +136,11 @@ class MemberController extends Controller
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required',
             'no_telp' => 'required',
-            'password' => 'string',
+            'status' => 'string',
+            'password' => 'string|min:8',
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response(['message' => $validate->errors()], 400);
         }
 
@@ -144,9 +148,14 @@ class MemberController extends Controller
         $member->tanggal_lahir = $update['tanggal_lahir'];
         $member->alamat = $update['alamat'];
         $member->no_telp = $update['no_telp'];
-        $member->password = $update['password'];
+        if(isset($update['password'])){
+            $member->password = bcrypt($update['password']);
+        }
+        
 
-        if($member->save()){
+        // $member->status = $update['status'];
+
+        if ($member->save()) {
             return response([
                 'message' => 'Berhasil Mengubah Member',
                 'data' => $member,
@@ -155,7 +164,7 @@ class MemberController extends Controller
 
         return response([
             'message' => 'Gagal Mengubah Member',
-            'data' => null, 
+            'data' => null,
         ], 400);
     }
 
@@ -169,14 +178,14 @@ class MemberController extends Controller
     {
         $member = Member::find($id);
 
-        if(is_null($member)){
+        if (is_null($member)) {
             return response([
                 'message' => 'Member tidak ditemukan',
                 'data' => null
             ], 404);
         }
 
-        if($member->delete()){
+        if ($member->delete()) {
             return response([
                 'message' => 'Berhasil Menghapus Member',
                 'data' => $member,
@@ -189,7 +198,8 @@ class MemberController extends Controller
         ], 400);
     }
 
-    public function resetPassword($id){
+    public function resetPassword($id)
+    {
         $member = Member::find($id);
 
         if (is_null($member)) {
@@ -198,9 +208,9 @@ class MemberController extends Controller
                 'data' => null
             ], 404);
         }
-     
+
         $member->password = bcrypt($member->tanggal_lahir);
-        if($member->save()){
+        if ($member->save()) {
             return response([
                 'message' => 'Berhasil Mereset Password Member',
                 'data' => $member,

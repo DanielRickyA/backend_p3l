@@ -17,7 +17,8 @@ class AuthController extends Controller
         return 'nama';
     }
 
-    public function loginPegawai(Request $request){
+    public function loginPegawai(Request $request)
+    {
         $loginData = $request->all();
 
         $validate = Validator::make($loginData, [
@@ -45,24 +46,24 @@ class AuthController extends Controller
 
     public function LogoutPegawai(Request $request)
     {
-        $token = $request->pegawai()->token();
-        $token->revoke();
+        $request->user()->token()->revoke();
         return response([
             'message' => 'Logout Success'
         ], 200);
     }
 
 
-    public function loginInstruktur(Request $request){
+    public function loginInstruktur(Request $request)
+    {
         $loginInstruktur = $request->all();
         $validator = Validator::make($loginInstruktur, [
             'nama' => 'required',
             'password' => 'required',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-        if (!Auth::guard('instruktur')->attempt($loginInstruktur)){
+        if (!Auth::guard('instruktur')->attempt($loginInstruktur)) {
             return response(['message' => 'Invalid Credentials'], 401);
         }
         $guard = Auth::guard('instruktur')->user();

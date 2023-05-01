@@ -20,7 +20,7 @@ class JadwalUmumController extends Controller
     {
 
         $jadwalUmum = JadwalUmum::with(['FKelas', 'FInstruktur'])->get();
-        if(count($jadwalUmum) > 0){
+        if (count($jadwalUmum) > 0) {
             return response([
                 'message' => 'Berhasil Menerima data',
                 'data' => $jadwalUmum
@@ -40,7 +40,7 @@ class JadwalUmumController extends Controller
      */
     public function create()
     {
-       
+
         // 
     }
 
@@ -61,25 +61,25 @@ class JadwalUmumController extends Controller
             'hari_kelas' => 'required|string',
             'jam_kelas' => 'required|string',
         ]);
-        if($validate->fails()){
+        if ($validate->fails()) {
             return response(['message' => $validate->errors()], 400);
         }
 
         $checkKelas = Kelas::where('id', $request->id_kelas)->first();
-        if(!$checkKelas){
+        if (!$checkKelas) {
             return response([
                 'message' => 'Kelas Tidak ada',
             ], 400);
         }
 
         $checkInstruktur = Instruktur::where('id', $request->id_instruktur)->first();
-        if(!$checkInstruktur){
+        if (!$checkInstruktur) {
             return response([
                 'message' => 'Instruktur Tidak ada',
             ], 400);
         }
 
-        
+
         $jadwalUmum = JadwalUmum::create($storeData);
         return response([
             'message' => 'Berhasil Menambahkan Jadwal',
@@ -97,7 +97,7 @@ class JadwalUmumController extends Controller
     {
         $jadwalUmum = JadwalUmum::with(['FKelas', 'FInstruktur'])->where('id', $id)->first();
 
-        if(!is_null($jadwalUmum)){
+        if (!is_null($jadwalUmum)) {
             return response([
                 'message' => 'Berhasil Menerima data',
                 'data' => $jadwalUmum
@@ -131,7 +131,7 @@ class JadwalUmumController extends Controller
     public function update(Request $request, $id)
     {
         $jadwalUmum = JadwalUmum::find($id);
-        if(is_null($jadwalUmum)){
+        if (is_null($jadwalUmum)) {
             return response([
                 'message' => 'Data Tidak ada',
                 'data' => null,
@@ -170,8 +170,8 @@ class JadwalUmumController extends Controller
         $jadwalUmum->tanggal = $updateData['tanggal'];
         $jadwalUmum->hari_kelas = $updateData['hari_kelas'];
         $jadwalUmum->jam_kelas = $updateData['jam_kelas'];
-        
-        if($jadwalUmum->save()){
+
+        if ($jadwalUmum->save()) {
             return response([
                 'message' => 'Berhasil Mengubah Jadwal',
                 'data' => $jadwalUmum,
@@ -194,14 +194,14 @@ class JadwalUmumController extends Controller
     {
         $jadwalUmum = JadwalUmum::find($id);
 
-        if(is_null($jadwalUmum)){
+        if (is_null($jadwalUmum)) {
             return response([
                 'message' => 'Data Tidak ada',
                 'data' => null,
             ], 400);
         }
 
-        if($jadwalUmum->delete()){
+        if ($jadwalUmum->delete()) {
             return response([
                 'message' => 'Berhasil Menghapus Jadwal',
                 'data' => $jadwalUmum,

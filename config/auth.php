@@ -52,12 +52,21 @@ return [
             'driver' => 'session',
             'provider' => 'instruktur',
         ],
+        'pegawaiP' => [
+            'driver' => 'passport',
+            'provider' => 'pegawai',
+        ],
+        'memberP' => [
+            'driver' => 'passport',
+            'provider' => 'member',
+        ],
+        'instrukturP' => [
+            'driver' => 'passport',
+            'provider' => 'instruktur',
+        ],
     ],
 
-    'api' => [
-        'driver' => 'passport',
-        'provider' => 'users',
-    ],
+    
 
     /*
     |--------------------------------------------------------------------------
