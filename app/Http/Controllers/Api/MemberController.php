@@ -57,7 +57,7 @@ class MemberController extends Controller
             $storeData,
             [
                 'nama' => 'required',
-                'tanggal_lahir' => 'required|date',
+                'tanggal_lahir' => 'required|date|before:today',
                 'alamat' => 'required',
                 'no_telp' => 'required|',
 
@@ -69,8 +69,9 @@ class MemberController extends Controller
 
         $date = date("y.m.");
         $id = IdGenerator::generate(['table' => 'member', 'length' => 8, 'prefix' => $date]);
-        $storeData['status'] = 'Mati';
         $storeData['id'] = $id;
+        $storeData['status'] = 'Inactive';
+        $storeData['deposit_uang'] = 0;
         $storeData['password'] = bcrypt($storeData['tanggal_lahir']);
         $member = Member::create($storeData);
         return response([
@@ -136,7 +137,6 @@ class MemberController extends Controller
             'tanggal_lahir' => 'required|date',
             'alamat' => 'required',
             'no_telp' => 'required',
-            'status' => 'string',
             'password' => 'string|min:8',
         ]);
 

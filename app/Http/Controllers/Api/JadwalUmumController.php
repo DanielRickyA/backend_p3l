@@ -38,10 +38,16 @@ class JadwalUmumController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    private static function cekInsturktur($id, $hari, $jam)
     {
 
-        // 
+        $count = JadwalUmum::where('id_instruktur', '=', $id)
+        ->where('hari_kelas', '=', $hari)
+        ->where('jam_kelas', '=', $jam)
+        ->count();
+
+
+        return $count;
     }
 
     /**
@@ -56,13 +62,19 @@ class JadwalUmumController extends Controller
 
         $validate = Validator::make($storeData, [
             'id_kelas' => 'required',
+            // making id_insturktur, hari_kelas, and jam_kelas unique in the same time
             'id_instruktur' => 'required',
-            'tanggal' => 'required|date',
             'hari_kelas' => 'required|string',
             'jam_kelas' => 'required|string',
         ]);
         if ($validate->fails()) {
             return response(['message' => $validate->errors()], 400);
+        }
+
+        if(self::cekInsturktur($request->id_instruktur, $request->hari_kelas, $request->jam_kelas) > 0){
+            return response([
+                'message' => 'Instruktur sudah memiliki jadwal dihari dan jam samas',
+            ], 400);
         }
 
         $checkKelas = Kelas::where('id', $request->id_kelas)->first();
@@ -79,7 +91,7 @@ class JadwalUmumController extends Controller
             ], 400);
         }
 
-
+        $storeData['id'] = 
         $jadwalUmum = JadwalUmum::create($storeData);
         return response([
             'message' => 'Berhasil Menambahkan Jadwal',
@@ -95,7 +107,7 @@ class JadwalUmumController extends Controller
      */
     public function show($id)
     {
-        $jadwalUmum = JadwalUmum::with(['FKelas', 'FInstruktur'])->where('id', $id)->first();
+        $jadwalUmum = JadwalUmum::with(['FKelas', 'FInstruktur'])->find($id);
 
         if (!is_null($jadwalUmum)) {
             return response([
@@ -142,7 +154,6 @@ class JadwalUmumController extends Controller
         $validate = Validator::make($updateData, [
             'id_kelas' => 'required',
             'id_instruktur' => 'required',
-            'tanggal' => 'required|date',
             'hari_kelas' => 'required|string',
             'jam_kelas' => 'required|string',
         ]);
@@ -167,7 +178,6 @@ class JadwalUmumController extends Controller
 
         $jadwalUmum->id_kelas = $updateData['id_kelas'];
         $jadwalUmum->id_instruktur = $updateData['id_instruktur'];
-        $jadwalUmum->tanggal = $updateData['tanggal'];
         $jadwalUmum->hari_kelas = $updateData['hari_kelas'];
         $jadwalUmum->jam_kelas = $updateData['jam_kelas'];
 

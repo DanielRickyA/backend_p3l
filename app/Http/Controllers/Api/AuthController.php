@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Instruktur;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Pegawai;
@@ -48,7 +49,35 @@ class AuthController extends Controller
     {
         $request->user()->token()->revoke();
         return response([
-            'message' => 'Logout Success'
+            'message' => 'Logout Success', 
+        ], 200);
+    }
+
+    public function ChangePasswordPegawai(Request $request)
+    {
+        $pegawai = $request->all();
+        $validator = Validator::make($pegawai, [
+            'nama' => 'required',
+            'password' => 'required',
+        ],);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
+
+        // $peg = Pegawai::where('nama', $pegawai['nama'])->first();
+        // checking Pegawai the name from the $pegawai and pegawai role is MO
+        $peg = Pegawai::where('nama', $pegawai['nama'])->where('role', 'MO')->first();
+
+        if (is_null($peg)) {
+            return response()->json([
+                'message' => 'Pegawai not found'
+            ], 404);
+        }
+        $peg->password = bcrypt($pegawai['password']);
+        $peg->save();
+
+        return response()->json([
+            'message' => 'Pegawai password changed'
         ], 200);
     }
 
@@ -83,6 +112,31 @@ class AuthController extends Controller
         $token->revoke();
         return response([
             'message' => 'Logout Success'
+        ], 200);
+    }
+
+    public function ChangePasswordInsturktur(Request $request){
+        $instruktur = $request->all();
+        $validator = Validator::make($instruktur, [
+            'nama' => 'required',
+            'password' => 'required',
+        ]);
+        if($validator->fails()){
+            return response()->json($validator->errors(), 400);
+        }
+        
+        $ins = Instruktur::where('nama', $instruktur['nama'])->first();
+
+        if(is_null($ins)){
+            return response()->json([
+                'message' => 'Instruktur not found'
+            ], 404);
+        }
+        $ins->password = bcrypt($instruktur['password']);
+        $ins->save();
+
+        return response()->json([
+            'message' => 'Instruktur password changed'
         ], 200);
     }
 }

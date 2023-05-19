@@ -21,6 +21,6 @@ class PerizinanInstruktur extends Model
 
     public function FInstruktur()
     {
-        return $this->belongsTo(Insturktur::class, 'id_instruktur', 'id');
+        return $this->belongsTo(Instruktur::class, 'id_instruktur', 'id');
     }
 }

@@ -49,4 +49,6 @@ class AuthMemberController extends Controller
             'message' => 'Logout Success'
         ], 200);
     }
+
+
 }

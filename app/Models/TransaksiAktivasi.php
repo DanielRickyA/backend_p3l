@@ -8,14 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class TransaksiAktivasi extends Model
 {
     use HasFactory;
+
+    public $incrementing = false;
+    protected $keyType = 'string';
+    
     public $timestamps = false;
     protected $table = 'transaksi_aktivasi';
     protected $fillable = [
+        'id',
         'id_pegawai',
         'id_member',
         'tanggal_transaksi',
         'jumlah_bayar',
-        'tanggal_kedaluarsa',
+        // 'tanggal_kedaluarsa',
         'jenis_pembayaran',
     ];
 

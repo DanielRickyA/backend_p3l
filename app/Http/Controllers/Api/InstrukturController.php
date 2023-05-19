@@ -52,8 +52,8 @@ class InstrukturController extends Controller
     {
         $storeData = $request->all();
         $validate = Validator::make($storeData, [
-            'nama' => 'required',
-            'email' => 'required|email',
+            'nama' => 'required|',
+            'email' => 'required|email:rfc,dns',
             'alamat' => 'required',
             'tanggal_lahir' => 'required|date',
             'no_telp' => 'required',
@@ -129,7 +129,7 @@ class InstrukturController extends Controller
             'alamat' => 'required',
             'tanggal_lahir' => 'required|date',
             'no_telp' => 'required',
-            'password' => 'string|min:8|unique:instruktur' ,
+            'password' => 'string|min:8' ,
         ]);
 
         if ($validate->fails()) {

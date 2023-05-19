@@ -8,9 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class TransaksiDepositKelas extends Model
 {
     use HasFactory;
+    public $incrementing = false;
+    protected $keyType = 'string';
+    
     public $timestamps = false;
     protected $table = 'transaksi_deposit_kelas';
     protected $fillable = [
+        'id',
         'id_pegawai',
         'id_member',
         'id_kelas',
@@ -18,6 +22,7 @@ class TransaksiDepositKelas extends Model
         'tanggal_depo',
         'masa_berlaku',
         'bonus',
+        'jumlah_depo',
         'total_depo',
         'jumlah_pembayaran',
     ];

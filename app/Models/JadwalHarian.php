@@ -9,12 +9,14 @@ class JadwalHarian extends Model
 {
     use HasFactory;
     public $timestamps = false;
-    protected $table = 'jadwal_harian';
+    protected $table = 'jadwal_harians';
     protected $fillable = [
+        'tanggal_jadwal_harian',
         'id_jadwal_umum',
         'id_instruktur',
-        'hari_kelas',
         'jam_kelas',
+        'hari_kelas',
+        'last_update',
     ];
 
     public function FJadwalUmum()
@@ -23,6 +25,6 @@ class JadwalHarian extends Model
     }
     public function FInstruktur()
     {
-        return $this->belongsTo(Insturktur::class, 'id_instruktur', 'id');
+        return $this->belongsTo(Instruktur::class, 'id_instruktur', 'id');
     }
 }
