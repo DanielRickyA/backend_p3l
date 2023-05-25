@@ -12,6 +12,7 @@ class PresensiInstruktur extends Model
     protected $table = 'presensi_instruktur';
     protected $fillable = [
         'id_instruktur',
+        'id_jadwal_harian', 
         'tanggal_kelas',
         'jam_mulai',
         'jam_selesai',
@@ -21,6 +22,11 @@ class PresensiInstruktur extends Model
 
     public function FInstruktur()
     {
-        return $this->belongsTo(Insturktur::class, 'id_instruktur', 'id');
+        return $this->belongsTo(Instruktur::class, 'id_instruktur', 'id');
+    }
+    
+    public function FJadwalHarian()
+    {
+        return $this->belongsTo(JadwalHarian::class, 'id_jadwal_harian', 'id');
     }
 }

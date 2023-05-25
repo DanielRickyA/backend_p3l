@@ -12,23 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class JadwalHarianController extends Controller
 {
-
-    public function getJadwalHarian()
-    {
-        $jadwalHarian = JadwalHarian::with(['FKelas', 'FPegawai'])->get();
-        if (count($jadwalHarian) > 0) {
-            return response([
-                'message' => 'Berhasil menerima data',
-                'data' => $jadwalHarian
-            ], 200);
-        }
-
-        return response([
-            'message' => 'Data tidak ada',
-            'data' => null
-        ], 404);
-    }
-
     public function index()
     {
         if (JadwalHarian::count() == 0) {
@@ -56,8 +39,9 @@ class JadwalHarianController extends Controller
 
     public function generateJadwalHarian()
     {
+        
         $jadwalUmum = JadwalUmum::get();
-        $startDate = Carbon::today();
+        $startDate = Carbon::now('Asia/Jakarta');
         $endDate = $startDate->copy()->addDays(6);
 
         $existingJadwalHarian = JadwalHarian::whereBetween('tanggal_jadwal_harian', [$startDate, $endDate])->get();
@@ -87,7 +71,8 @@ class JadwalHarianController extends Controller
         if ($existingJadwalHarian->isNotEmpty()) {
             return response([
                 'message' => 'Jadwal harian untuk minggu ini sudah digenerate.',
-                'data' => $lateDateCheckCarbon->addDays($temp)
+                'data' => $lateDateCheckCarbon->addDays($temp),
+                'startDate' => $startDate,
             ], 400);
         }
 
@@ -119,6 +104,8 @@ class JadwalHarianController extends Controller
 
         return response([
             'message' => 'Jadwal Harian Berhasil Digenerate untuk satu minggu',
+            'lateDate' => $lateDateCheckCarbon->addDays($temp),
+            'startDate' => $startDate,
         ], 200);
         // $jadwalUmum = JadwalUmum::get();
         // $startDate = Carbon::today();
@@ -167,22 +154,6 @@ class JadwalHarianController extends Controller
         // ], 200);
     }
 
-    public function show1($id)
-    {
-        $jadwalHarian = JadwalHarian::find([$id]);
-
-        if (!is_null($jadwalHarian)) {
-            return response([
-                'message' => 'Berhasil Mendapatkan Data',
-                'data' => $jadwalHarian
-            ], 200);
-        }
-
-        return response([
-            'message' => 'Jadwal Harian Tidak Ditemukan',
-            'data' => null
-        ], 404);
-    }
     public function changeStatus1($id)
     {
         $jadwalHarian = JadwalHarian::with(['FJadwalUmum', 'FJadwalUmum.fInstruktur', 'FJadwalUmum.fKelas',  'FInstruktur'])->find([$id]);
@@ -272,6 +243,56 @@ class JadwalHarianController extends Controller
             'last_update',
             $jadwal->last_update
         )->where('tanggal_jadwal_harian', '>=', date('Y-m-d'))->orderBy('tanggal_jadwal_harian', 'asc')->get();
+
+
+        if (count($jadwalHarian) > 0) {
+            return response([
+                'message' => 'Data Successfully',
+                'data' => $jadwalHarian
+            ], 200);
+        }
+    }
+
+    public function getjadwalHarian()
+    {
+        if (JadwalHarian::count() == 0) {
+            return response([
+                'message' => 'No Data',
+            ], 200);
+        }
+
+
+        $jadwal = JadwalHarian::orderBy('last_update', 'desc')->first();
+
+        $jadwalHarian = JadwalHarian::with(['FJadwalUmum', 'FJadwalUmum.fInstruktur', 'FJadwalUmum.fKelas',  'FInstruktur'])->where(
+            'last_update',
+            $jadwal->last_update
+        )->where('tanggal_jadwal_harian', '>=', date('Y-m-d'))->orderBy('tanggal_jadwal_harian', 'asc')->get();
+
+
+        if (count($jadwalHarian) > 0) {
+            return response([
+                'message' => 'Data Successfully',
+                'data' => $jadwalHarian
+            ], 200);
+        }
+    }
+
+    public function getjadwalHarianToday()
+    {
+        if (JadwalHarian::count() == 0) {
+            return response([
+                'message' => 'No Data',
+            ], 200);
+        }
+
+
+        $jadwal = JadwalHarian::orderBy('last_update', 'desc')->first();
+
+        $jadwalHarian = JadwalHarian::with(['FJadwalUmum', 'FJadwalUmum.fInstruktur', 'FJadwalUmum.fKelas',  'FInstruktur'])->where(
+            'last_update',
+            $jadwal->last_update
+        )->where('tanggal_jadwal_harian', '=', date('Y-m-d'))->orderBy('tanggal_jadwal_harian', 'asc')->get();
 
 
         if (count($jadwalHarian) > 0) {

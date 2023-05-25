@@ -8,9 +8,14 @@ use Illuminate\Database\Eloquent\Model;
 class PresensiBookingGym extends Model
 {
     use HasFactory;
+    
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     public $timestamps = false;
     protected $table = 'presensi_booking_gym';
     protected $fillable = [
+        'id',
         'id_member',
         'tanggal_yang_dibooking',
         'tanggal_booking',

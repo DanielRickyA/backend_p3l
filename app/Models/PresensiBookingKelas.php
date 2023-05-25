@@ -8,14 +8,20 @@ use Illuminate\Database\Eloquent\Model;
 class PresensiBookingKelas extends Model
 {
     use HasFactory;
+
+    public $incrementing = false;
+    protected $keyType = 'string';
+
     public $timestamps = false;
     protected $table = 'presensi_booking_kelas';
     protected $fillable = [
+        'id',
         'id_member',
-        'tanggal_jadwal_harian',
-        'tanggal_yang_dibooking',
+        'id_jadwal_harian',
         'tanggal_booking',
+        'tanggal_yang_dibooking',
         'waktu_presensi',
+        'jenis_pembayaran',
         'tarif',
     ];
 
@@ -26,6 +32,6 @@ class PresensiBookingKelas extends Model
 
     public function FJadwalHarian()
     {
-        return $this->belongsTo(JadwalHarian::class, 'tanggal_jadwal_harian', 'tanggal_jadwal_harian');
+        return $this->belongsTo(JadwalHarian::class, 'id_jadwal_harian', 'id');
     }
 }

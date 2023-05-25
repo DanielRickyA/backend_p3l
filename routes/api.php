@@ -24,7 +24,8 @@ Route::post('loginInstruktur', 'App\Http\Controllers\Api\AuthController@loginIns
 Route::post('loginMember', 'App\Http\Controllers\Api\AuthMemberController@loginMember');
 Route::put('ChangePasswordInsturktur', 'App\Http\Controllers\Api\AuthController@ChangePasswordInsturktur');
 Route::put('ChangePasswordMO', 'App\Http\Controllers\Api\AuthController@ChangePasswordPegawai');
-
+Route::get('PromoAll', 'App\Http\Controllers\Api\PromoController@tampilPromo');
+Route::get('JadwalHarianAll', 'App\Http\Controllers\Api\JadwalHarianController@getjadwalHarian');
 
 Route::group(['middleware' => 'auth:pegawaiP'], function () {
     // Kasir
@@ -47,6 +48,13 @@ Route::group(['middleware' => 'auth:pegawaiP'], function () {
     Route::get('TransaksiDepositKelas', 'App\Http\Controllers\Api\TransaksiDepoKelasController@getAllDepositKelas');
     Route::get('TransaksiDepositKelas/{id}', 'App\Http\Controllers\Api\TransaksiDepoKelasController@getByIdDK');
     Route::post('TransaksiDepositKelas', 'App\Http\Controllers\Api\TransaksiDepoKelasController@transaksiDepositKelas');
+
+    Route::get('PresensiBookingGymToday', 'App\Http\Controllers\Api\PresensiBookingGymController@getPresensiBookingGymToday');
+    Route::get('PresensiBookingGym/{id}', 'App\Http\Controllers\Api\PresensiBookingGymController@getPresensiBookingGymById');
+    Route::patch('PresensiBookingGymToday/{id}', 'App\Http\Controllers\Api\PresensiBookingGymController@PresensiMember');
+
+    Route::get('PresensiBookingKelasToday' , 'App\Http\Controllers\Api\PresensiBookingKelasController@getPresensiKelasToday');
+    Route::get('PresensiBookingKelas/{id}' , 'App\Http\Controllers\Api\PresensiBookingKelasController@getPresnesiBookingKelasById');
     
 
     // Admin
@@ -77,6 +85,14 @@ Route::group(['middleware' => 'auth:pegawaiP'], function () {
     Route::get('Kelas', 'App\Http\Controllers\Api\KelasController@index');
     Route::get('Promo', 'App\Http\Controllers\Api\PromoController@index');
 
+    // Moobile
+    Route::get('getJadwalHarianToday', 'App\Http\Controllers\Api\JadwalHarianController@getjadwalHarianToday');
+    Route::get('PresensiInstruktur', 'App\Http\Controllers\Api\PresensiInstrukturController@getPresensiToday');
+    Route::get('PresensiInstrukturToday', 'App\Http\Controllers\Api\PresensiInstrukturController@getPresensiAllToday');
+    Route::post('PresensiInstruktur', 'App\Http\Controllers\Api\PresensiInstrukturController@SetPresensInstruktur');
+    Route::patch('PresensiInstruktur/{id}', 'App\Http\Controllers\Api\PresensiInstrukturController@setJamSelesaiPresensi');
+
+
     Route::post('LogoutPegawai', 'App\Http\Controllers\Api\AuthController@LogoutPegawai');
 });
 
@@ -86,11 +102,16 @@ Route::group(['middleware' => 'auth:instrukturP'], function () {
     Route::get('showIjinInsturktur', 'App\Http\Controllers\Api\IjinInstrukturController@showIzinInsturktur');
     Route::post('PerizinanInstruktur', 'App\Http\Controllers\Api\IjinInstrukturController@requestIzin');
 
-    // 
-    Route::get('JadwalHarianM', 'App\Http\Controllers\Api\JadwalHarianController@getjadwalHarianM');
- 
-
     
-
+    // 
+    
 });
-  
+
+Route::group(['middleware' => 'auth:memberP'], function () {
+    Route::get('JadwalHarianM', 'App\Http\Controllers\Api\JadwalHarianController@getjadwalHarianM');
+    Route::post('PresensiBookingKelas', 'App\Http\Controllers\Api\PresensiBookingKelasController@store');
+
+    Route::get('BookingGym', 'App\Http\Controllers\Api\PresensiBookingGymController@showBookingGymMember');
+    Route::post('BookingGym', 'App\Http\Controllers\Api\PresensiBookingGymController@bookingGym');
+    Route::delete('BookingGym/{id}', 'App\Http\Controllers\Api\PresensiBookingGymController@batalKelas');
+});

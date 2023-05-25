@@ -24,4 +24,21 @@ class PromoController extends Controller
             'data' => null
         ], 404);
     }
+
+    public function tampilPromo(){
+        $promo = Promo::where('id', '!=', 3)->get();
+
+        if (count($promo) > 0) {
+            
+            return response([
+                'message' => 'Berhasil Menerima data',
+                'data' => $promo
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Tidak ada data',
+            'data' => null
+        ], 404);
+    }
 }
