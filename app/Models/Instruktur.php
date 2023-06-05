@@ -19,6 +19,7 @@ class Instruktur extends Authenticatable
         'alamat',
         'tanggal_lahir',
         'no_telp',
+        'akumulasi_terlambat',
         'password',
     ];
 

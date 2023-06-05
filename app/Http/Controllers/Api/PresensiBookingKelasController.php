@@ -218,4 +218,22 @@ class PresensiBookingKelasController extends Controller
             'data' => null
         ], 200);
     }
+
+    public function getHistoryBookingM($id){
+        $bookingKelas = PresensiBookingKelas::with(['FMember', 'FJadwalHarian', 'FJadwalHarian.FJadwalUmum.FKelas' , 'FJadwalHarian.FInstruktur'])
+        ->where('id_member', '=', $id)
+        ->get();
+
+        if($bookingKelas){
+            return response([
+                'message' => 'Berhasil Menampilkan Data',
+                'data' => $bookingKelas,
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Data Tidak ada',
+            'data' => null
+        ], 200);
+    }
 }

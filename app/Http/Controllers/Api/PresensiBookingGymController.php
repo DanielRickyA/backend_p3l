@@ -76,7 +76,7 @@ class PresensiBookingGymController extends Controller
         if($bookingGym){
             if($bookingGym->tanggal_yang_dibooking <= date("Y-m-d")){
                 return response([
-                    'message' => 'Tidak bisa membatalkan booking gym pada hari yang sama',
+                    'message' => 'Tidak Bisa Batal Booking Gym',
                 ], 400);
             }
 

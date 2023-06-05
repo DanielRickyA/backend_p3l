@@ -92,4 +92,22 @@ class PresensiInstrukturController extends Controller
         ],200);
     }
 
+    public function getPresensiInstruktur(Request $request){
+        $instruktur = $request->user();
+        $presensiInstruktur = PresensiInstruktur::with(['FInstruktur','FJadwalHarian', 'FJadwalHarian.FJadwalUmum.FKelas'])->where('id_instruktur','=',$instruktur->id)->get();
+
+        if(count($presensiInstruktur) > 0){
+            return response([
+                'message' => 'Berhasil menerima data',
+                'data' => $presensiInstruktur
+            ],200);
+        }
+        
+        return response([
+            'message' => 'Tidak ada data',
+            'instruktur' => $instruktur->nama,
+            'data' => null
+        ],404);
+    }
+
 }

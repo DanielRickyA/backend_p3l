@@ -92,6 +92,11 @@ Route::group(['middleware' => 'auth:pegawaiP'], function () {
     Route::post('PresensiInstruktur', 'App\Http\Controllers\Api\PresensiInstrukturController@SetPresensInstruktur');
     Route::patch('PresensiInstruktur/{id}', 'App\Http\Controllers\Api\PresensiInstrukturController@setJamSelesaiPresensi');
 
+    Route::get('LaporanGym/{month}', 'App\Http\Controllers\Api\LaporanPerbulanController@getGymActivityMonthly');
+    Route::get('LaporanKelas/{month}', 'App\Http\Controllers\Api\LaporanPerbulanController@getKelasActivityMonthly');
+    Route::get('LaporanDana', 'App\Http\Controllers\Api\LaporanPerbulanController@getMonthlyIncome');
+    Route::get('LaporanKinerjaIns/{month}', 'App\Http\Controllers\Api\LaporanPerbulanController@getKinerjaInstrukturMonthly');
+
 
     Route::post('LogoutPegawai', 'App\Http\Controllers\Api\AuthController@LogoutPegawai');
 });
@@ -102,7 +107,8 @@ Route::group(['middleware' => 'auth:instrukturP'], function () {
     Route::get('showIjinInsturktur', 'App\Http\Controllers\Api\IjinInstrukturController@showIzinInsturktur');
     Route::post('PerizinanInstruktur', 'App\Http\Controllers\Api\IjinInstrukturController@requestIzin');
 
-    
+    Route::get('Instruktur/{id}', 'App\Http\Controllers\Api\InstrukturController@show');
+    Route::get('cekHistoryKelasInstruktur', 'App\Http\Controllers\Api\PresensiInstrukturController@getPresensiInstruktur');
     // 
     
 });
@@ -110,8 +116,13 @@ Route::group(['middleware' => 'auth:instrukturP'], function () {
 Route::group(['middleware' => 'auth:memberP'], function () {
     Route::get('JadwalHarianM', 'App\Http\Controllers\Api\JadwalHarianController@getjadwalHarianM');
     Route::post('PresensiBookingKelas', 'App\Http\Controllers\Api\PresensiBookingKelasController@store');
-
+ 
     Route::get('BookingGym', 'App\Http\Controllers\Api\PresensiBookingGymController@showBookingGymMember');
     Route::post('BookingGym', 'App\Http\Controllers\Api\PresensiBookingGymController@bookingGym');
     Route::delete('BookingGym/{id}', 'App\Http\Controllers\Api\PresensiBookingGymController@batalKelas');
+
+    Route::get('Member/{id}', 'App\Http\Controllers\Api\MemberController@show');
+
+    Route::get('cekDepositM/{id}', 'App\Http\Controllers\Api\DepositKelasController@showDepoKelasMember');
+    Route::get('cekHistoryKelas/{id}' , 'App\Http\Controllers\Api\PresensiBookingKelasController@getHistoryBookingM');
 });
