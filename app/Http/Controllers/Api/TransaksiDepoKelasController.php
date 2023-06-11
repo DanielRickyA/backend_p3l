@@ -13,6 +13,7 @@ use App\Models\Kelas;
 use App\Models\TransaksiAktivasi;
 use App\Models\TransaksiDepositKelas;
 use App\Models\TransaksiDeposiUang;
+use Illuminate\Support\Facades\DB;
 use Psy\Readline\Hoa\Console;
 
 class TransaksiDepoKelasController extends Controller
@@ -103,17 +104,43 @@ class TransaksiDepoKelasController extends Controller
         $kembalian = $depoKelas['jumlah_pembayaran'] - $totalBayar;
         $depoKelas['jumlah_pembayaran'] = $depoKelas['jumlah_depo'] * $kelas['harga'];
         $transaksiDepositKelas = TransaksiDepositKelas::create($depoKelas);
-        $depositKelas = [
-            'id_kelas' => $depoKelas['id_kelas'],
-            'id_member' => $depoKelas['id_member'],
-            'masa_berlaku_depo' => $depoKelas['masa_berlaku'],
-            'sisa_deposit' => $depoKelas['total_depo']
-        ];
+        $cekDepoKelas = DepositKelas::where('id_member', $depoKelas['id_member'])
+        ->where('id_kelas', $depoKelas['id_kelas'])
+        ->get();
 
-        $hasilDepoKelas = DepositKelas::create($depositKelas);
+        if(count($cekDepoKelas) > 0){
+            $depositKelas = DepositKelas::where([
+                'id_member' => $depoKelas['id_member'],
+                'id_kelas' => $depoKelas['id_kelas'],
+            ])
+            ->first();
+            // $depositKelas['sisa_deposit'] = $depositKelas['sisa_deposit'] + $depoKelas['total_depo'];
+            // $depositKelas['masa_berlaku_depo'] = $depoKelas['masa_berlaku'];
+            // $depositKelas->save();
+
+            DB::table('deposit_kelas')
+            ->where('id_kelas', $depoKelas['id_kelas'])
+            ->where('id_member', $depoKelas['id_member'])
+            ->update([
+                'masa_berlaku_depo' => $depoKelas['masa_berlaku'],
+                'sisa_deposit' => $depositKelas->sisa_deposit + $depoKelas['total_depo']
+            ]);
+        }else{     
+            $depositKelas = [
+                'id_kelas' => $depoKelas['id_kelas'],
+                'id_member' => $depoKelas['id_member'],
+                'masa_berlaku_depo' => $depoKelas['masa_berlaku'],
+                'sisa_deposit' => $depoKelas['total_depo']
+            ];
+            $hasilDepoKelas = DepositKelas::create($depositKelas);
+        }
+
+
+
+
         return response([
             'message' => 'Transaksi Deposit Kelas Berhasil',
-            'data' => ['Trasnsaksi_Depo_kelas' => $transaksiDepositKelas, 'deposit_kelas' => $hasilDepoKelas],
+            'data' => ['Trasnsaksi_Depo_kelas' => $transaksiDepositKelas],
             'kembalian' => $kembalian
         ], 200);
     }

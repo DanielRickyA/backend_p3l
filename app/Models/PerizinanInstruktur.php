@@ -12,6 +12,7 @@ class PerizinanInstruktur extends Model
     protected $table = 'perizinan_instruktur';
     protected $fillable = [
         'id_instruktur',
+        'instruktur_pengganti',
         'tanggal_izin',
         'tanggal_buat_izin',
         'status',
@@ -22,5 +23,9 @@ class PerizinanInstruktur extends Model
     public function FInstruktur()
     {
         return $this->belongsTo(Instruktur::class, 'id_instruktur', 'id');
+    }
+
+    public function FPengganti(){
+        return $this->belongsTo(Instruktur::class, 'instruktur_pengganti', 'id');
     }
 }

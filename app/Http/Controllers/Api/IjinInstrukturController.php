@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Instruktur;
 use App\Models\JadwalHarian;
 use App\Models\PerizinanInstruktur;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class IjinInstrukturController extends Controller
      */
     public function index()
     {
-        $ijinInstrktur = PerizinanInstruktur::with(['FInstruktur'])->where('status', '=', null)->get();
+        $ijinInstrktur = PerizinanInstruktur::with(['FInstruktur', 'FPengganti'])->where('status', '=', null)->get();
         if (count($ijinInstrktur) > 0) {
             return response([
                 'message' => 'Berhasil menerima data',
@@ -48,10 +49,13 @@ class IjinInstrukturController extends Controller
         $validate = Validator::make($storeData, [
             'id_jadwal' => 'required',
             'keterangan' => 'required',
+            'instruktur_pengganti' => 'required'
         ]);
         if ($validate->fails())
             return response(['message' => $validate->errors()], 400);
 
+        if($storeData['instruktur_pengganti'] == $request->user()->id)
+            return response(['message' => 'Tidak dapat mengganti diri sendiri'], 400);
 
         $instruktur = $request->user();
         $jadwalInstruktur = JadwalHarian::where('id', '=', $request->id_jadwal)->where('id_instruktur', '=', $instruktur->id)->first();
@@ -62,6 +66,7 @@ class IjinInstrukturController extends Controller
             'id_instruktur' => $instruktur->id,
             'tanggal_izin' => $jadwalInstruktur->tanggal_jadwal_harian,
             'keterangan' => $request->keterangan,
+            'instruktur_pengganti' => $request->instruktur_pengganti,   
             'tanggal_buat_izin' => date('Y-m-d'),
             'status' => null,
             'tanggal_konfirm' => null,
@@ -82,7 +87,10 @@ class IjinInstrukturController extends Controller
     public function showJadwalInsturktur(Request $request)
     {
         $instruktur = $request->user();
-        $jadwalInstruktur = JadwalHarian::with(['FInstruktur', 'FJadwalUmum'])->where('id_instruktur', '=', $instruktur->id)->get();
+        $jadwalInstruktur = JadwalHarian::with(['FInstruktur', 'FJadwalUmum.FKelas'])
+        ->where('id_instruktur', '=', $instruktur->id)
+        ->where('tanggal_jadwal_harian', '>=', date('Y-m-d'))
+        ->get();
         if (!is_null($jadwalInstruktur)) {
             return response([
                 'message' => 'Berhasil menerima data',
@@ -99,7 +107,9 @@ class IjinInstrukturController extends Controller
     public function showIzinInsturktur(Request $request)
     {
         $instruktur = $request->user();
-        $ijin = PerizinanInstruktur::with(['FInstruktur'])->where('id_instruktur', '=', $instruktur->id)->get();
+        $ijin = PerizinanInstruktur::with(['FInstruktur'])
+        ->where('id_instruktur', '=', $instruktur->id)
+        ->get();
         if (!is_null($ijin)) {
             return response([
                 'message' => 'Berhasil menerima data',
@@ -141,18 +151,19 @@ class IjinInstrukturController extends Controller
             ], 404);
         }
 
-        $updateData = $request->all();
-        $validate = Validator::make($updateData, [
-            'id_instruktur' => 'required',
-        ]);
-        if ($validate->fails()) {
-            return response(['message' => $validate->errors()], 400);
-        }
-        if (self::cekInsturktur($updateData['id_instruktur'], $jadwal->tanggal_jadwal_harian, $jadwal->FJadwalUmum->jam_kelas) > 0) {
+        $jadwal->id_instruktur = $perizinan->instruktur_pengganti;
+        // $updateData = $request->all();
+        // $validate = Validator::make($updateData, [
+        //     'id_instruktur' => 'required',
+        // ]);
+        // if ($validate->fails()) {
+        //     return response(['message' => $validate->errors()], 400);
+        // }
+        // if (self::cekInsturktur($updateData['id_instruktur'], $jadwal->tanggal_jadwal_harian, $jadwal->FJadwalUmum->jam_kelas) > 0) {
 
-            return response(['message' => 'Jadwal Instruktur Bertabrakan'], 400);
-        }
-        $jadwal->status = 'Instruktur Digantikan';
+        //     return response(['message' => 'Jadwal Instruktur Bertabrakan'], 400);
+        // }
+        // $jadwal->status = 'Instruktur Digantikan';
         $jadwal->save();
         return response([
             'message' => 'Berhasil menerima permintaan izin',
@@ -160,6 +171,24 @@ class IjinInstrukturController extends Controller
             'jadwal' => $jadwal
         ], 200);
     }
+
+    public function getDataInstruktur()
+    {
+        $instruktur = Instruktur::all();
+
+        if (count($instruktur) > 0) {
+            return response([
+                'message' => 'Berhasil Menerima data',
+                'data' => $instruktur
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Tidak ada data',
+            'data' => null
+        ], 404);
+    }
+
 
     private static function cekInsturktur($id, $tanggal, $jam)
     {

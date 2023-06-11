@@ -20,6 +20,7 @@ class PresensiBookingKelas extends Model
         'id_jadwal_harian',
         'tanggal_booking',
         'tanggal_yang_dibooking',
+        'status',
         'waktu_presensi',
         'jenis_pembayaran',
         'tarif',

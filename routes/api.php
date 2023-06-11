@@ -106,11 +106,15 @@ Route::group(['middleware' => 'auth:instrukturP'], function () {
     Route::get('showInstrukturHarian', 'App\Http\Controllers\Api\IjinInstrukturController@showJadwalInsturktur');
     Route::get('showIjinInsturktur', 'App\Http\Controllers\Api\IjinInstrukturController@showIzinInsturktur');
     Route::post('PerizinanInstruktur', 'App\Http\Controllers\Api\IjinInstrukturController@requestIzin');
+    Route::get('getInstrukturData', 'App\Http\Controllers\Api\IjinInstrukturController@getDataInstruktur');
 
     Route::get('Instruktur/{id}', 'App\Http\Controllers\Api\InstrukturController@show');
     Route::get('cekHistoryKelasInstruktur', 'App\Http\Controllers\Api\PresensiInstrukturController@getPresensiInstruktur');
     // 
-    
+    Route::get('getJadwalKelasToday', 'App\Http\Controllers\Api\PresensiBookingKelasController@getDataBookingKelasInstruktur');
+    Route::get('getAllMemberKelas/{id}', 'App\Http\Controllers\Api\PresensiBookingKelasController@getDataMember');
+    Route::patch('setPresensiMember/{id}', 'App\Http\Controllers\Api\PresensiBookingKelasController@setPresensiHadir');
+    Route::patch('setPresensiMemberTH/{id}', 'App\Http\Controllers\Api\PresensiBookingKelasController@setPresensiTidakHadir');
 });
 
 Route::group(['middleware' => 'auth:memberP'], function () {
@@ -125,4 +129,6 @@ Route::group(['middleware' => 'auth:memberP'], function () {
 
     Route::get('cekDepositM/{id}', 'App\Http\Controllers\Api\DepositKelasController@showDepoKelasMember');
     Route::get('cekHistoryKelas/{id}' , 'App\Http\Controllers\Api\PresensiBookingKelasController@getHistoryBookingM');
+    Route::get('cekHBookingKelasMember/{id}' , 'App\Http\Controllers\Api\PresensiBookingKelasController@getHistoryBookingMember');
+    Route::delete('cekHBookingKelasMember/{id}' , 'App\Http\Controllers\Api\PresensiBookingKelasController@batalKelas');
 });

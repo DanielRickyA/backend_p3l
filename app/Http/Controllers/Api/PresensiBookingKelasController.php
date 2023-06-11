@@ -8,6 +8,7 @@ use App\Models\JadwalHarian;
 use App\Models\Member;
 // use App\Models\PresensiBookingKelas;
 use App\Models\PresensiBookingKelas;
+use App\Models\PresensiInstruktur;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -85,12 +86,15 @@ class PresensiBookingKelasController extends Controller
         ])->first();
 
         
-        // $cekPenuh = $jadwalHarian['tanggal_jadwal_harian']::where('id_jadwal_harian', '=' , $storeData['id'])->count();
-        // if ($cekPenuh == 0) {
-        //     return response([
-        //         'message' => 'Kelas Penuh',
-        //     ], 400);
-        // }
+        $cekPenuh = PresensiBookingKelas::where([
+            'id_jadwal_harian' => $request->id_jadwal_harian,
+        ])->count();
+        if ($cekPenuh == 10) {
+            return response([
+                'message' => 'Kelas Penuh',
+            ], 400);
+        }
+
         // Cek Tarif jika deposit kelas
         if ($storeData['jenis_pembayaran'] == "Deposit Kelas") {
             if (is_null($sisaDeposit)) {
@@ -126,36 +130,7 @@ class PresensiBookingKelasController extends Controller
             'data' => $presensiBookingkelas,
         ], 200);
     }
-// Buat PResensi
-// if ($storeData['jenis_pembayaran'] == "Deposit Kelas") {
-//     if (is_null($sisaDeposit)) {
-//         return response([
-//             'message' => 'Deposit Kelas kosong',
-//         ], 404);
-//     }
-//     if ($sisaDeposit['sisa_deposit'] <= 0) {
-//         return response([
-//             'message' => 'Sisa Deposit Tidak Mencukupi',
-//         ], 404);
-//     }
 
-//     $sisaDeposit = DepositKelas::where([
-//         'id_member' => $member['id'],
-//         'id_kelas' => $jadwalHarian['FJadwalUmum']['Fkelas']['id'],
-//     ])->decrement('sisa_deposit');
-
-//     // Cek Tarif jika bukan deposit uang
-// } else {
-//     if ($member['deposit_uang'] < $jadwalHarian['FJadwalUmum']['Fkelas']['harga']) {
-//         return response([
-//             'message' => 'Deposit Uang Tidak Mencukupi',
-//         ], 400);
-//     }
-
-//     $member['deposit_uang'] = $member['deposit_uang'] - $jadwalHarian['FJadwalUmum']['FKelas']['harga'];
-//     $storeData['tarif'] = $jadwalHarian['FJadwalUmum']['FKelas']['harga'];
-//     $member->save();
-// }
 
     /**
      * Show the form for editing the specified resource.
@@ -191,7 +166,7 @@ class PresensiBookingKelasController extends Controller
         return response([
             'message' => 'Data Tidak ada',
             'data' => null
-        ], 200);
+        ], 404);
     }
 
     public function getPresnesiBookingKelasById($id){
@@ -216,7 +191,7 @@ class PresensiBookingKelasController extends Controller
         return response([
             'message' => 'Data Tidak ada',
             'data' => null
-        ], 200);
+        ], 404);
     }
 
     public function getHistoryBookingM($id){
@@ -234,6 +209,179 @@ class PresensiBookingKelasController extends Controller
         return response([
             'message' => 'Data Tidak ada',
             'data' => null
+        ], 404);
+    }
+// mendapatkan hasil booking member order by tanggal dsc
+    public function getHistoryBookingMember($id)
+    {
+        $bookingKelas = PresensiBookingKelas::with(['FMember', 'FJadwalHarian', 'FJadwalHarian.FJadwalUmum.FKelas', 'FJadwalHarian.FInstruktur'])
+        ->where('id_member', '=', $id)
+        ->where('tanggal_yang_dibooking', '>=', date('Y-m-d'))
+        ->where('waktu_presensi', '=', null)
+        ->orderBy('tanggal_yang_dibooking', 'desc')
+        ->get();
+
+        if ($bookingKelas) {
+            return response([
+                'message' => 'Berhasil Menampilkan Data',
+                'data' => $bookingKelas,
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Data Tidak ada',
+            'data' => null
+        ], 404);
+    }
+
+    public function batalKelas($id){
+        $bookingKelas = PresensiBookingKelas::find($id);
+        if($bookingKelas->tanggal_yang_dibooking <= date("Y-m-d")) {
+            return response([
+                'message' => 'Tidak Bisa Batal Booking Kelas',
+            ], 400);
+        }
+        $bookingKelas->delete();
+        return response([
+            'message' => 'Berhasil membatalkan booking Kelas',
+            'data' => $bookingKelas
         ], 200);
     }
+
+    public function getDataBookingKelasInstruktur(Request $request ){
+        $jadwalHarian = JadwalHarian::with(['FJadwalUmum.FKelas', 'FInstruktur'])
+        ->where('id_instruktur', '=', $request->user()->id)
+        ->where('tanggal_jadwal_harian', '=', date('Y-m-d'))
+        ->get();
+        if(count($jadwalHarian) > 0){
+            return response([
+                'message' => 'Berhasil Menampilkan Data',
+                'data' => $jadwalHarian
+            ], 200);
+        }
+        return response([
+            'message' => 'Data Tidak ada',
+            'data' => null
+        ], 400);
+    }
+
+    public function getDataMember($id){
+        $bookingKelas = PresensiBookingKelas::with(['FMember', 'FJadwalHarian', 'FJadwalHarian.FJadwalUmum.FKelas', 'FJadwalHarian.FInstruktur'])
+        ->where('id_jadwal_harian', '=', $id)
+        ->get();
+
+        if(count($bookingKelas) > 0){
+            return response([
+                'message' => 'Berhasil Menampilkan Data',
+                'data' => $bookingKelas
+            ], 200);
+        }
+
+        return response([
+            'message' => 'Data Tidak ada',
+            'data' => null
+        ], 400);
+    }
+
+    
+    public function setPresensiHadir($id){
+        $presensiMember = PresensiBookingKelas::find($id);
+
+        if ($presensiMember == null) {
+            return response([
+                'message' => 'Data Tidak ada',
+                'data' => null
+            ], 404);
+        }
+
+        $presensi = PresensiInstruktur::where('id_jadwal_harian', '=', $presensiMember->id_jadwal_harian)->first();
+        if($presensi == null){
+            return response([
+                'message' => 'Instruktur Belum Dipresensi',
+                'data' => null
+            ], 400);
+        }
+
+
+        
+
+        $jadwalHarian = JadwalHarian::with(['FJadwalUmum.FKelas'])->find($presensiMember->id_jadwal_harian);
+        $member = Member::find($presensiMember->id_member);
+        if($presensiMember->jenis_pembayaran == "Deposit Kelas"){
+             DepositKelas::where([
+                'id_member' => $presensiMember->id_member,
+                'id_kelas' => $jadwalHarian['FJadwalUmum']['Fkelas']['id'],
+            ])->decrement('sisa_deposit');
+        }else{
+            $member->deposit_uang = $member->deposit_uang - $jadwalHarian['FJadwalUmum']['FKelas']['harga'];
+            $member->save();
+        }
+
+
+
+
+        $presensiMember->waktu_presensi = date('Y-m-d H:i:s');
+        $presensiMember->status = 'Hadir';
+        $presensiMember->tarif = $jadwalHarian['FJadwalUmum']['FKelas']['harga'];
+        $presensiMember->save();
+
+        return response([
+            'message' => 'Berhasil Melakukan Presensi',
+            'data' => $presensiMember
+        ], 200);
+        
+    }
+
+    public function setPresensiTidakHadir($id)
+    {
+        $presensiMember = PresensiBookingKelas::find($id);
+
+        if ($presensiMember == null) {
+            return response([
+                'message' => 'Data Tidak ada',
+                'data' => null
+            ], 404);
+        }
+
+        $presensi = PresensiInstruktur::where('id_jadwal_harian', '=', $presensiMember->id_jadwal_harian)->first();
+        if ($presensi == null) {
+            return response([
+                'message' => 'Instruktur Belum Dipresensi',
+                'data' => null
+            ], 400);
+        }
+
+
+
+
+        $jadwalHarian = JadwalHarian::with(['FJadwalUmum.FKelas'])->find($presensiMember->id_jadwal_harian);
+        $member = Member::find($presensiMember->id_member);
+        if ($presensiMember->jenis_pembayaran == "Deposit Kelas") {
+            DepositKelas::where([
+                'id_member' => $presensiMember->id_member,
+                'id_kelas' => $jadwalHarian['FJadwalUmum']['Fkelas']['id'],
+            ])->decrement('sisa_deposit');
+        } else {
+            $member->deposit_uang = $member->deposit_uang - $jadwalHarian['FJadwalUmum']['FKelas']['harga'];
+            $member->save();
+        }
+
+
+
+
+        $presensiMember->waktu_presensi = null;
+        $presensiMember->status = 'Tidak Hadir';
+        $presensiMember->tarif = $jadwalHarian['FJadwalUmum']['FKelas']['harga'];
+        $presensiMember->save();
+
+        return response([
+            'message' => 'Berhasil Melakukan Presensi',
+            'data' => $presensiMember
+        ], 200);
+    }
+
+    
+
+    
+    
 }

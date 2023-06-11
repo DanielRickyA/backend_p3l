@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\JadwalUmum;
 use App\Models\Kelas;
 use App\Models\Instruktur;
+use App\Models\PresensiBookingKelas;
 
 class JadwalUmumController extends Controller
 {
@@ -38,7 +39,19 @@ class JadwalUmumController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    private static function cekInsturktur($id, $hari, $jam)
+    private static function cekInsturkturUpdate($id, $idKelas, $hari, $jam)
+    {
+
+        $count = JadwalUmum::where('id_instruktur', '=', $id)
+        ->where('id_kelas', '=', $idKelas)
+        ->where('hari_kelas', '=', $hari)
+        ->where('jam_kelas', '=', $jam)
+        ->count();
+
+
+        return $count;
+    }
+    private static function cekInsturkturStore($id, $hari, $jam)
     {
 
         $count = JadwalUmum::where('id_instruktur', '=', $id)
@@ -71,9 +84,9 @@ class JadwalUmumController extends Controller
             return response(['message' => $validate->errors()], 400);
         }
 
-        if(self::cekInsturktur($request->id_instruktur, $request->hari_kelas, $request->jam_kelas) > 0){
+        if(self::cekInsturkturStore($request->id_instruktur, $request->hari_kelas, $request->jam_kelas) > 0){
             return response([
-                'message' => 'Instruktur sudah memiliki jadwal dihari dan jam samas',
+                'message' => 'Instruktur sudah memiliki jadwal dihari dan jam sama',
             ], 400);
         }
 
@@ -176,6 +189,12 @@ class JadwalUmumController extends Controller
             ], 400);
         }
 
+        if (self::cekInsturkturUpdate($request->id_instruktur, $request->id_kelas, $request->hari_kelas, $request->jam_kelas) > 0) {
+            return response([
+                'message' => 'Instruktur sudah memiliki jadwal dihari dan jam sama',
+            ], 400);
+        }
+
         $jadwalUmum->id_kelas = $updateData['id_kelas'];
         $jadwalUmum->id_instruktur = $updateData['id_instruktur'];
         $jadwalUmum->hari_kelas = $updateData['hari_kelas'];
@@ -223,4 +242,6 @@ class JadwalUmumController extends Controller
             'data' => null,
         ], 400);
     }
+
+    
 }
