@@ -43,8 +43,7 @@ class AuthMemberController extends Controller
 
     public function LogoutMember(Request $request)
     {
-        $token = Auth::guard('member')->user()->token_name;
-        $token->revoke();
+        $request->user()->token()->revoke();
         return response([
             'message' => 'Logout Success'
         ], 200);

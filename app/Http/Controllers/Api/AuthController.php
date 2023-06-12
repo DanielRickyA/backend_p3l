@@ -108,8 +108,7 @@ class AuthController extends Controller
 
     public function LogoutInstruktur(Request $request)
     {
-        $token = $request->instruktur()->token();
-        $token->revoke();
+        $request->user()->token()->revoke();
         return response([
             'message' => 'Logout Success'
         ], 200);

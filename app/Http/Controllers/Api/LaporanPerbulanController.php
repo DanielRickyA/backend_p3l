@@ -111,7 +111,9 @@ class LaporanPerbulanController extends Controller
 
     public function getKinerjaInstrukturMonthly($month){
         DB::statement("SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
-        $laporanGym = DB::select("SELECT i.nama, count(pi.jam_mulai) as jumlah_hadir, (select count(*) FROM jadwal_harians jh where jh.status = 'Libur' AND jh.id = pi.id_jadwal_harian) as jumlah_libur, sum(pi.durasi_terlambat) as waktu_terlambat from presensi_instruktur pi 
+        $laporanGym = DB::select("SELECT i.nama, count(pi.jam_mulai) as jumlah_hadir, 
+        (select count(*) FROM jadwal_harians jh where jh.status = 'Libur' 
+        AND jh.id = pi.id_jadwal_harian) as jumlah_libur, sum(pi.durasi_terlambat) as waktu_terlambat from presensi_instruktur pi 
             join instruktur i on (pi.id_instruktur = i.id)
             join jadwal_harians jh on (pi.id_jadwal_harian = jh.id) 
             where LEFT(pi.tanggal_kelas, 7) = :dateInputan GROUP BY i.nama, LEFT(pi.tanggal_kelas, 7);", [

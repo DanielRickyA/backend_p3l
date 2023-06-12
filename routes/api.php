@@ -77,6 +77,7 @@ Route::group(['middleware' => 'auth:pegawaiP'], function () {
     Route::patch('JadwalHarian/{id}', 'App\Http\Controllers\Api\JadwalHarianController@changeStatus');
 
     Route::get('PerizinanInstruktur', 'App\Http\Controllers\Api\IjinInstrukturController@index');
+    Route::get('getAllPerizinanInstruktur', 'App\Http\Controllers\Api\IjinInstrukturController@getAllDataIjin');
     Route::put('PerizinanInstrukturK/{id}', 'App\Http\Controllers\Api\IjinInstrukturController@konfirmPerizinan');
     Route::put('PerizinanInstrukturT/{id}', 'App\Http\Controllers\Api\IjinInstrukturController@tolakPerizinan');
     
@@ -96,9 +97,9 @@ Route::group(['middleware' => 'auth:pegawaiP'], function () {
     Route::get('LaporanKelas/{month}', 'App\Http\Controllers\Api\LaporanPerbulanController@getKelasActivityMonthly');
     Route::get('LaporanDana', 'App\Http\Controllers\Api\LaporanPerbulanController@getMonthlyIncome');
     Route::get('LaporanKinerjaIns/{month}', 'App\Http\Controllers\Api\LaporanPerbulanController@getKinerjaInstrukturMonthly');
-
-
     Route::post('LogoutPegawai', 'App\Http\Controllers\Api\AuthController@LogoutPegawai');
+
+   
 });
 
 Route::group(['middleware' => 'auth:instrukturP'], function () {
@@ -115,6 +116,8 @@ Route::group(['middleware' => 'auth:instrukturP'], function () {
     Route::get('getAllMemberKelas/{id}', 'App\Http\Controllers\Api\PresensiBookingKelasController@getDataMember');
     Route::patch('setPresensiMember/{id}', 'App\Http\Controllers\Api\PresensiBookingKelasController@setPresensiHadir');
     Route::patch('setPresensiMemberTH/{id}', 'App\Http\Controllers\Api\PresensiBookingKelasController@setPresensiTidakHadir');
+    Route::post('LogoutInstruktur', 'App\Http\Controllers\Api\AuthController@LogoutInstruktur');
+    
 });
 
 Route::group(['middleware' => 'auth:memberP'], function () {
@@ -131,4 +134,6 @@ Route::group(['middleware' => 'auth:memberP'], function () {
     Route::get('cekHistoryKelas/{id}' , 'App\Http\Controllers\Api\PresensiBookingKelasController@getHistoryBookingM');
     Route::get('cekHBookingKelasMember/{id}' , 'App\Http\Controllers\Api\PresensiBookingKelasController@getHistoryBookingMember');
     Route::delete('cekHBookingKelasMember/{id}' , 'App\Http\Controllers\Api\PresensiBookingKelasController@batalKelas');
+
+    Route::post('LogoutMember', 'App\Http\Controllers\Api\AuthMemberController@LogoutMember');
 });

@@ -280,13 +280,13 @@ class JadwalHarianController extends Controller
 
     public function getjadwalHarianToday()
     {
+        
+        
         if (JadwalHarian::count() == 0) {
             return response([
                 'message' => 'No Data',
             ], 200);
         }
-
-
         $jadwal = JadwalHarian::orderBy('last_update', 'desc')->first();
 
         $jadwalHarian = JadwalHarian::with(['FJadwalUmum', 'FJadwalUmum.fInstruktur', 'FJadwalUmum.fKelas',  'FInstruktur'])->where(
@@ -301,5 +301,10 @@ class JadwalHarianController extends Controller
                 'data' => $jadwalHarian
             ], 200);
         }
+
+        return response([
+            'message' => 'Data Kosong untuk hari ini',
+            'data' => null
+        ], 404);
     }
 }

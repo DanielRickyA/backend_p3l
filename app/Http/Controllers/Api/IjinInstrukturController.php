@@ -27,6 +27,17 @@ class IjinInstrukturController extends Controller
         }
     }
 
+    public function getAllDataIjin()
+    {
+        $ijinInstrktur = PerizinanInstruktur::with(['FInstruktur', 'FPengganti'])->where('status', '!=', null)->get();
+        if (count($ijinInstrktur) > 0) {
+            return response([
+                'message' => 'Berhasil menerima data',
+                'data' => $ijinInstrktur
+            ], 200);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -222,9 +233,20 @@ class IjinInstrukturController extends Controller
      */
     public function tolakPerizinan($id)
     {
-        $perizinan = PerizinanInstruktur::find($id);
+        $perizinan = PerizinanInstruktur::findOrFail($id);
+        if (is_null($perizinan)) {
+            return response([
+                'message' => 'Perizinan tidak ditemukan',
+                'data' => null
+            ], 404);
+        }
         $perizinan->status = '0';
         $perizinan->tanggal_konfirm = date('Y-m-d');
         $perizinan->save();
+        
+        return response([
+            'message' => 'Berhasil menolak permintaan izin',
+            'data' => $perizinan,
+        ], 200);
     }
 }

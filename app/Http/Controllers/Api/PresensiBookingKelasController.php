@@ -280,7 +280,7 @@ class PresensiBookingKelasController extends Controller
         return response([
             'message' => 'Data Tidak ada',
             'data' => null
-        ], 400);
+        ], 404);
     }
 
     
