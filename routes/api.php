@@ -66,27 +66,30 @@ Route::group(['middleware' => 'auth:pegawaiP'], function () {
 
     // MO
 
+    
     Route::get('JadwalUmum', 'App\Http\Controllers\Api\JadwalUmumController@index');
     Route::get('JadwalUmum/{id}', 'App\Http\Controllers\Api\JadwalUmumController@show');
     Route::post('JadwalUmum', 'App\Http\Controllers\Api\JadwalUmumController@store');
     Route::put('JadwalUmum/{id}', 'App\Http\Controllers\Api\JadwalUmumController@update');
     Route::delete('JadwalUmum/{id}', 'App\Http\Controllers\Api\JadwalUmumController@destroy');
-
+    
     Route::get('JadwalHarian', 'App\Http\Controllers\Api\JadwalHarianController@index');
     Route::post('JadwalHarian', 'App\Http\Controllers\Api\JadwalHarianController@generateJadwalHarian');
     Route::patch('JadwalHarian/{id}', 'App\Http\Controllers\Api\JadwalHarianController@changeStatus');
-
+    
     Route::get('PerizinanInstruktur', 'App\Http\Controllers\Api\IjinInstrukturController@index');
     Route::get('getAllPerizinanInstruktur', 'App\Http\Controllers\Api\IjinInstrukturController@getAllDataIjin');
     Route::put('PerizinanInstrukturK/{id}', 'App\Http\Controllers\Api\IjinInstrukturController@konfirmPerizinan');
     Route::put('PerizinanInstrukturT/{id}', 'App\Http\Controllers\Api\IjinInstrukturController@tolakPerizinan');
     
-
+    
     
     Route::get('Kelas', 'App\Http\Controllers\Api\KelasController@index');
     Route::get('Promo', 'App\Http\Controllers\Api\PromoController@index');
-
+    
     // Moobile
+    Route::get('MO/{id}', 'App\Http\Controllers\Api\InstrukturController@getDataMO($id)');
+
     Route::get('getJadwalHarianToday', 'App\Http\Controllers\Api\JadwalHarianController@getjadwalHarianToday');
     Route::get('PresensiInstruktur', 'App\Http\Controllers\Api\PresensiInstrukturController@getPresensiToday');
     Route::get('PresensiInstrukturToday', 'App\Http\Controllers\Api\PresensiInstrukturController@getPresensiAllToday');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Instruktur;
+use App\Models\Pegawai;
 
 class InstrukturController extends Controller
 {
@@ -183,5 +184,21 @@ class InstrukturController extends Controller
             'message' => 'instruktur Gagal Dihapus',
             'data' => null
         ], 400);
+    }
+
+    public function getDataMO($id)
+    {
+        $mo = Pegawai::find($id);
+
+        if (!is_null($mo)) {
+            return response([
+                'message' => 'Berhasil Mendapatkan Data',
+                'data' => $mo
+            ], 200);
+        }
+        return response([
+            'message' => 'instruktur Tidak Ditemukan',
+            'data' => null
+        ], 404);
     }
 }
